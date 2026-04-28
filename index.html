@@ -118,8 +118,12 @@
     .video-sec .sec-hd h2 { color: #fff; }
     .video-sec .sec-hd p { color: rgba(255,255,255,.65); }
     .video-sec .divider { background: var(--warm); }
-    .video-wrap { position: relative; max-width: 960px; margin: 0 auto; aspect-ratio: 16/9; border-radius: 2px; overflow: hidden; box-shadow: 0 24px 64px rgba(0,0,0,.45); }
-    .video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+    .video-wrap { display: block; position: relative; max-width: 960px; margin: 0 auto; aspect-ratio: 16/9; border-radius: 2px; overflow: hidden; box-shadow: 0 24px 64px rgba(0,0,0,.45); cursor: pointer; }
+    .video-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+    .video-wrap:hover img { transform: scale(1.03); }
+    .video-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .video-play svg { width: 80px; height: 80px; filter: drop-shadow(0 4px 16px rgba(0,0,0,.5)); transition: transform .2s; }
+    .video-wrap:hover .video-play svg { transform: scale(1.1); }
     @media (max-width: 768px) { .video-sec { padding: 56px 20px; } }
 
     /* INQUIRY FORM */
@@ -154,6 +158,36 @@
     .f-info { font-size: .78rem; text-align: center; }
     .f-info span { display: block; }
     .f-rights { font-size: .73rem; text-align: right; }
+
+    /* MODAL */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(27,20,14,.72); z-index:2000; overflow-y:auto; padding:40px 20px; }
+    .modal-overlay.open { display:flex; align-items:flex-start; justify-content:center; }
+    .modal-box { background:#fff; max-width:860px; width:100%; position:relative; border-top:3px solid var(--accent); animation:mSlide .25s ease; }
+    @keyframes mSlide { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    .modal-close { position:absolute; top:14px; right:18px; background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--muted); line-height:1; transition:color .2s; z-index:1; }
+    .modal-close:hover { color:var(--dark); }
+    .modal-inner { display:grid; grid-template-columns:340px 1fr; }
+    .modal-img { background:var(--surface); display:flex; align-items:center; justify-content:center; padding:28px; min-height:300px; }
+    .modal-img img { object-fit:contain; width:100%; height:100%; max-height:360px; }
+    .modal-content { padding:34px 36px; overflow:auto; }
+    .modal-tags { display:flex; gap:7px; margin-bottom:10px; flex-wrap:wrap; }
+    .modal-name { font-family:'Cormorant Garamond',Georgia,serif; font-size:2rem; font-weight:600; color:var(--dark); margin-bottom:6px; line-height:1.2; }
+    .modal-desc { font-size:.88rem; color:var(--muted); margin-bottom:22px; line-height:1.55; }
+    .modal-sec { margin-bottom:18px; }
+    .modal-sec-title { font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin-bottom:8px; padding-bottom:5px; border-bottom:1px solid var(--border); }
+    .modal-specs { display:grid; grid-template-columns:1fr 1fr; gap:7px 16px; }
+    .modal-sp { display:flex; flex-direction:column; gap:1px; }
+    .modal-sp.full { grid-column:1/-1; }
+    .modal-sp-lbl { font-size:.6rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+    .modal-sp-val { font-size:.87rem; font-weight:600; color:var(--dark); }
+    .modal-inquiry { margin-top:22px; }
+    @media (max-width:700px) {
+      .modal-inner { grid-template-columns:1fr; }
+      .modal-img { min-height:220px; max-height:260px; }
+      .modal-content { padding:22px 20px; }
+      .modal-overlay { padding:0; align-items:flex-end; }
+      .modal-box { border-top:none; border-left:3px solid var(--accent); }
+    }
 
     /* MOBILE */
     @media (max-width: 1024px) { .w-grid { grid-template-columns: repeat(2,1fr); } }
@@ -201,7 +235,7 @@
   <div class="hero-bg"><img src="images/hero.jpg" alt="NJORD BADEN"></div>
   <div class="hero-ov"></div>
   <div class="hero-c">
-    <p style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:300;font-size:clamp(2.8rem,5.5vw,5.2rem);color:rgba(255,255,255,.85);letter-spacing:.04em;margin-bottom:14px;">Nj&#x030A;ordBaden</p>
+    <p id="brand-capture" style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:300;font-size:72px;color:rgba(255,255,255,.85);letter-spacing:.04em;margin-bottom:14px;white-space:nowrap;">N<span style="letter-spacing:0">j&#x030A;</span>ordBaden</p>
     <h1 data-i18n="hero_title">Nordic Luxury</h1>
     <p class="hero-sub" data-i18n="hero_sub">for your everyday wellness</p>
     <p class="hero-desc" data-i18n="hero_desc">Premium whirlpools &amp; swim spas assembled in the Czech Republic</p>
@@ -231,9 +265,15 @@
     <div class="divider"></div>
     <p data-i18n="vid_sub">Experience Nordic luxury in motion</p>
   </div>
-  <div class="video-wrap">
-    <iframe src="https://www.youtube.com/embed/I3aD2DkvqUA" title="NjordBaden" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-  </div>
+  <a class="video-wrap" href="https://www.youtube.com/watch?v=I3aD2DkvqUA" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/I3aD2DkvqUA/hqdefault.jpg" alt="NjordBaden video">
+    <div class="video-play">
+      <svg viewBox="0 0 68 48" xmlns="http://www.w3.org/2000/svg">
+        <path d="M66.5 7.8a8.5 8.5 0 0 0-6-6C56 0 34 0 34 0S12 0 7.5 1.8a8.5 8.5 0 0 0-6 6C0 12.3 0 24 0 24s0 11.7 1.5 16.2a8.5 8.5 0 0 0 6 6C12 48 34 48 34 48s22 0 26.5-1.8a8.5 8.5 0 0 0 6-6C68 35.7 68 24 68 24s0-11.7-1.5-16.2z" fill="#ff0000"/>
+        <path d="M27 34l18-10-18-10v20z" fill="#fff"/>
+      </svg>
+    </div>
+  </a>
 </section>
 
 <section id="products">
@@ -319,6 +359,36 @@
   <div class="c-email"><a href="mailto:hej@njordbaden.com">hej@njordbaden.com</a></div>
 </section>
 
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+    <div class="modal-inner">
+      <div class="modal-img"><img id="modal-img" src="" alt=""></div>
+      <div class="modal-content">
+        <div class="modal-tags" id="modal-tags"></div>
+        <div class="modal-name" id="modal-name"></div>
+        <div class="modal-desc" id="modal-desc"></div>
+        <div class="modal-sec">
+          <div class="modal-sec-title" id="modal-sec1-title"></div>
+          <div class="modal-specs" id="modal-specs-basic"></div>
+        </div>
+        <div class="modal-sec">
+          <div class="modal-sec-title" id="modal-sec2-title"></div>
+          <div class="modal-specs" id="modal-specs-tech"></div>
+        </div>
+        <div class="modal-sec">
+          <div class="modal-sec-title" id="modal-sec3-title"></div>
+          <div class="modal-specs" id="modal-specs-build"></div>
+        </div>
+        <div class="modal-inquiry">
+          <a href="#inquiry" class="btn btn-p" onclick="closeModal()" id="modal-inq-btn" style="font-size:.72rem;padding:11px 24px;"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="f-logo"><img src="images/njordbaden_logo.png" alt="NjordBaden"></div>
   <div class="f-info">
@@ -347,10 +417,11 @@ const T = {
     lbl_people:"people", lbl_jets:"jets", lbl_vol:"volume", lbl_size:"dimensions",
     lbl_wt:"weight", lbl_heat:"heating", lbl_v:"voltage",
     lbl_pp:"Plug & Play", lbl_wp:"Whirlpool", lbl_ss:"Swim Spa",
+    lbl_pump:"pump", lbl_ctrl:"control panel", lbl_water:"water care", lbl_filter:"filtration", lbl_shell:"shell", lbl_panels:"side panels", lbl_ins:"insulation",
     inc_title:"Included with Every Whirlpool",
-    inc:["Thermocover","Wi-Fi touch screen (10 languages)","UV lamp for disinfection","Cartridge filtration","3 m power cable (PRCD)"],
+    inc:["Comfort thermocover – better insulation and safety","Bypass connection ready (heat pump / external filter)","Smart Wi-Fi control – heating scheduling & remote control","5\" capacitive touch screen, 800×480 px, 10-language display"],
     ss_inc_title:"Included with Every Swim Spa",
-    ss_inc:["Folding thermocover","2× cover lifters","Steps","Swim tether","Rowing kit (Odin model)"],
+    ss_inc:["Folding black thermocover","2× cover lifters","Black steps","Swim tether","Rowing equipment (Odin model only)"],
     vid_title:"See It in Action", vid_sub:"Experience Nordic luxury in motion",
     inq_title:"Send an Inquiry", inq_sub:"We will get back to you within 1–2 business days",
     inq_name:"Full name", inq_name_ph:"John Smith",
@@ -362,14 +433,15 @@ const T = {
     inq_ok:"Thank you! Your inquiry has been sent. We will contact you shortly.",
     inq_err:"Something went wrong. Please send us an email directly.",
     ct_title:"Contact Us", ct_desc:"Interested in a NJORD BADEN product? Write to us or visit our website.",
+    lbl_detail:"Full specs", lbl_sec_basic:"Dimensions & capacity", lbl_sec_tech:"Technology", lbl_sec_build:"Construction",
     ft_oem:"OEM / ODM / private label welcome", ft_asm:"Final assembly and QC in Czech Republic", ft_rts:"All rights reserved",
     d_home:"A reliable introduction to Nordic wellness. Designed for 4 people, NJORD Home brings Scandinavian comfort to any terrace or garden.",
     d_family:"38 jets and a square design for four. The NJORD Family is the ideal everyday spa for the whole family.",
     d_lounge:"Maximum power for maximum relaxation. 72 jets and space for 5 — the premium choice in our whirlpool range.",
-    d_horizon_compact:"Intimately designed for 2, the Horizon compact is the perfect entry into the world of NJORD.",
-    d_horizon:"Space for 5 in a square format with 27 jets. Clean, calm, Nordic.",
+    d_horizon_compact:"Intimately designed for 2 with 22 jets, the Horizon compact is the perfect entry into the world of NJORD.",
+    d_horizon:"Space for 5 in a square format with 31 jets. Clean, calm, Nordic.",
     d_vista:"An elongated spa with a view. Comfortable for 4, easy to install, Plug & Play.",
-    d_urban:"Designed for urban spaces. Compact yet capable — 27 jets for 4 people.",
+    d_urban:"Designed for urban spaces. Compact yet capable — 27 jets for 3 people.",
     d_odin:"A full-size swim spa for 6 with powerful counter-current. Train, relax, recover.",
     d_valhalla:"Our largest model — 8 people, 69 jets, counter-current swimming. Pure Valhalla.",
   },
@@ -387,10 +459,11 @@ const T = {
     lbl_people:"osoby", lbl_jets:"trysek", lbl_vol:"objem", lbl_size:"rozměry",
     lbl_wt:"váha", lbl_heat:"topení", lbl_v:"napětí",
     lbl_pp:"Plug & Play", lbl_wp:"Vířivka", lbl_ss:"Swim Spa",
+    lbl_pump:"čerpadlo", lbl_ctrl:"ovládací panel", lbl_water:"péče o vodu", lbl_filter:"filtrace", lbl_shell:"vana (akrylát)", lbl_panels:"boční panely", lbl_ins:"izolace",
     inc_title:"Součástí každé vířivky",
-    inc:["Termokryt","Wi-Fi dotykový panel (10 jazyků)","UV lampa pro dezinfekci","Kazetová filtrace","Napájecí kabel 3 m (PRCD)"],
+    inc:["Komfortní termokryt – lepší izolace a bezpečnost","Bypass připojení – pro tepelné čerpadlo nebo filtr","Chytré Wi-Fi ovládání – plánování topení a dálkové řízení","5\" kapacitní dotykový panel, 800×480 px, 10 jazyků"],
     ss_inc_title:"Součástí každého Swim Spa",
-    ss_inc:["Skládací termokryt","2× zdviháky krytu","Schůdky","Plavecký popruh","Veslařská sada (model Odin)"],
+    ss_inc:["Skládací černý termokryt","2× zdviháky krytu","Černé schůdky","Plavecký popruh","Veslařská sada (pouze model Odin)"],
     vid_title:"Podívejte se na video", vid_sub:"Zažijte severský luxus v pohybu",
     inq_title:"Odeslat poptávku", inq_sub:"Ozveme se vám do 1–2 pracovních dnů",
     inq_name:"Celé jméno", inq_name_ph:"Jan Novák",
@@ -402,14 +475,15 @@ const T = {
     inq_ok:"Děkujeme! Vaše poptávka byla odeslána. Brzy se vám ozveme.",
     inq_err:"Něco se pokazilo. Napište nám prosím přímo na email.",
     ct_title:"Kontaktujte nás", ct_desc:"Máte zájem o produkt NJORD BADEN? Napište nám nebo navštivte náš web.",
+    lbl_detail:"Technické parametry", lbl_sec_basic:"Rozměry a kapacita", lbl_sec_tech:"Technologie", lbl_sec_build:"Konstrukce",
     ft_oem:"OEM / ODM / soukromá značka vítána", ft_asm:"Finální montáž a kontrola kvality v České republice", ft_rts:"Všechna práva vyhrazena",
     d_home:"Spolehlivý vstup do světa severského wellness. Navržena pro 4 osoby, NJORD Home přináší skandinávský komfort na jakoukoli terasu nebo zahradu.",
     d_family:"38 trysek a čtvercový design pro čtyři. NJORD Family je ideální každodenní spa pro celou rodinu.",
     d_lounge:"Maximální výkon pro maximální relaxaci. 72 trysek a místo pro 5 osob — prémiová volba v naší nabídce vířivek.",
-    d_horizon_compact:"Intimně navržena pro 2 osoby, Horizon compact je perfektní vstup do světa NJORD.",
-    d_horizon:"Místo pro 5 osob ve čtvercovém formátu s 27 tryskami. Čistý, klidný, severský.",
+    d_horizon_compact:"Intimně navržena pro 2 osoby s 22 tryskami, Horizon compact je perfektní vstup do světa NJORD.",
+    d_horizon:"Místo pro 5 osob ve čtvercovém formátu s 31 tryskami. Čistý, klidný, severský.",
     d_vista:"Podlouhlá spa s výhledem. Pohodlná pro 4 osoby, snadná instalace, Plug & Play.",
-    d_urban:"Navržena pro městský prostor. Kompaktní a výkonná — 27 trysek pro 4 osoby.",
+    d_urban:"Navržena pro městský prostor. Kompaktní a výkonná — 27 trysek pro 3 osoby.",
     d_odin:"Plnohodnotné swim spa pro 6 osob s výkonným protiproudem. Trénujte, relaxujte, regenerujte.",
     d_valhalla:"Náš největší model — 8 osob, 69 trysek, protiproud. Čistá Valhalla.",
   },
@@ -427,10 +501,11 @@ const T = {
     lbl_people:"Personen", lbl_jets:"Düsen", lbl_vol:"Volumen", lbl_size:"Abmessungen",
     lbl_wt:"Gewicht", lbl_heat:"Heizung", lbl_v:"Spannung",
     lbl_pp:"Plug & Play", lbl_wp:"Whirlpool", lbl_ss:"Swim Spa",
+    lbl_pump:"Pumpe", lbl_ctrl:"Bedienfeld", lbl_water:"Wasserpflege", lbl_filter:"Filterung", lbl_shell:"Schale (Acryl)", lbl_panels:"Seitenverkleidung", lbl_ins:"Isolierung",
     inc_title:"Im Lieferumfang jedes Whirlpools",
-    inc:["Thermoabdeckung","Wi-Fi Touch-Bedienfeld (10 Sprachen)","UV-Lampe zur Desinfektion","Kartuschenfiltersystem","3 m Anschlusskabel (PRCD)"],
+    inc:["Komfort-Thermoabdeckung – bessere Isolierung und Sicherheit","Bypass-Anschluss vorbereitet (Wärmepumpe / ext. Filter)","Intelligente Wi-Fi-Steuerung – Heizplanung und Fernbedienung","5\" kapazitiver Touchscreen, 800×480 px, 10-Sprachen-Display"],
     ss_inc_title:"Im Lieferumfang jedes Swim Spas",
-    ss_inc:["Klappbare Thermoabdeckung","2× Abdeckungslifter","Einstiegstreppe","Schwimmband","Ruderset (nur Odin)"],
+    ss_inc:["Klappbare schwarze Thermoabdeckung","2× Abdeckungslifter","Schwarze Einstiegstreppe","Schwimmband","Ruderset (nur Odin-Modell)"],
     vid_title:"Erleben Sie es in Aktion", vid_sub:"Nordischen Luxus in Bewegung erleben",
     inq_title:"Anfrage senden", inq_sub:"Wir melden uns innerhalb von 1–2 Werktagen",
     inq_name:"Vollständiger Name", inq_name_ph:"Max Mustermann",
@@ -442,14 +517,15 @@ const T = {
     inq_ok:"Vielen Dank! Ihre Anfrage wurde gesendet. Wir melden uns in Kürze.",
     inq_err:"Etwas ist schiefgelaufen. Bitte schreiben Sie uns direkt per E-Mail.",
     ct_title:"Kontakt", ct_desc:"Interesse an einem NJORD BADEN Produkt? Schreiben Sie uns oder besuchen Sie unsere Website.",
+    lbl_detail:"Technische Daten", lbl_sec_basic:"Maße & Kapazität", lbl_sec_tech:"Technologie", lbl_sec_build:"Konstruktion",
     ft_oem:"OEM / ODM / Eigenmarke willkommen", ft_asm:"Endmontage und QC in der Tschechischen Republik", ft_rts:"Alle Rechte vorbehalten",
     d_home:"Eine zuverlässige Einführung in nordisches Wohlbefinden. Für 4 Personen konzipiert, bringt der NJORD Home skandinavischen Komfort auf jede Terrasse.",
     d_family:"38 Düsen und quadratisches Design für vier. Der NJORD Family ist der ideale Alltags-Spa für die ganze Familie.",
     d_lounge:"Maximale Leistung für maximale Entspannung. 72 Düsen und Platz für 5 — die Premium-Wahl in unserem Whirlpool-Sortiment.",
-    d_horizon_compact:"Intim für 2 gestaltet — der perfekte Einstieg in die Welt von NJORD.",
-    d_horizon:"Platz für 5 im quadratischen Format mit 27 Düsen. Klar, ruhig, nordisch.",
+    d_horizon_compact:"Intim für 2 mit 22 Düsen gestaltet — der perfekte Einstieg in die Welt von NJORD.",
+    d_horizon:"Platz für 5 im quadratischen Format mit 31 Düsen. Klar, ruhig, nordisch.",
     d_vista:"Ein länglicher Spa mit Ausblick. Komfortabel für 4, einfache Installation, Plug & Play.",
-    d_urban:"Für urbane Räume konzipiert. Kompakt und leistungsstark — 27 Düsen für 4 Personen.",
+    d_urban:"Für urbane Räume konzipiert. Kompakt und leistungsstark — 27 Düsen für 3 Personen.",
     d_odin:"Ein vollwertiger Swim Spa für 6 mit leistungsstarker Gegenstromanlage. Trainieren, entspannen, regenerieren.",
     d_valhalla:"Unser größtes Modell — 8 Personen, 69 Düsen, Gegenstromschwimmen. Pures Valhalla.",
   },
@@ -467,10 +543,11 @@ const T = {
     lbl_people:"personnes", lbl_jets:"jets", lbl_vol:"volume", lbl_size:"dimensions",
     lbl_wt:"poids", lbl_heat:"chauffage", lbl_v:"tension",
     lbl_pp:"Plug & Play", lbl_wp:"Jacuzzi", lbl_ss:"Swim Spa",
+    lbl_pump:"pompe", lbl_ctrl:"panneau de commande", lbl_water:"traitement de l'eau", lbl_filter:"filtration", lbl_shell:"coque (acrylique)", lbl_panels:"panneaux latéraux", lbl_ins:"isolation",
     inc_title:"Inclus avec chaque jacuzzi",
-    inc:["Couverture thermique","Panneau tactile Wi-Fi (10 langues)","Lampe UV pour désinfection","Filtration à cartouche","Câble 3 m (protection PRCD)"],
+    inc:["Couverture thermique confort – meilleure isolation et sécurité","Bypass prêt à connecter (pompe à chaleur / filtre externe)","Contrôle Wi-Fi intelligent – programmation du chauffage à distance","Écran tactile 5\", 800×480 px, 10 langues"],
     ss_inc_title:"Inclus avec chaque Swim Spa",
-    ss_inc:["Couverture thermique pliable","2× lève-couvercles","Escalier d'accès","Élastique de natation","Kit d'aviron (modèle Odin)"],
+    ss_inc:["Couverture thermique noire pliable","2× lève-couvercles","Escalier noir","Élastique de natation","Kit d'aviron (modèle Odin uniquement)"],
     vid_title:"Découvrez-le en action", vid_sub:"Vivez le luxe nordique en mouvement",
     inq_title:"Envoyer une demande", inq_sub:"Nous vous répondrons dans 1 à 2 jours ouvrables",
     inq_name:"Nom complet", inq_name_ph:"Jean Dupont",
@@ -482,38 +559,42 @@ const T = {
     inq_ok:"Merci ! Votre demande a été envoyée. Nous vous contacterons bientôt.",
     inq_err:"Une erreur s'est produite. Veuillez nous écrire directement par e-mail.",
     ct_title:"Contactez-nous", ct_desc:"Intéressé par un produit NJORD BADEN ? Écrivez-nous ou visitez notre site web.",
+    lbl_detail:"Fiche technique", lbl_sec_basic:"Dimensions & capacité", lbl_sec_tech:"Technologie", lbl_sec_build:"Construction",
     ft_oem:"OEM / ODM / marque privée bienvenue", ft_asm:"Assemblage final et QC en République tchèque", ft_rts:"Tous droits réservés",
     d_home:"Une introduction fiable au bien-être nordique. Conçu pour 4 personnes, le NJORD Home apporte le confort scandinave sur toute terrasse ou jardin.",
     d_family:"38 jets et un design carré pour quatre. Le NJORD Family est le spa quotidien idéal pour toute la famille.",
     d_lounge:"Puissance maximale pour une relaxation maximale. 72 jets et de la place pour 5 — le choix premium de notre gamme.",
-    d_horizon_compact:"Conçu intimement pour 2, le Horizon compact est la porte d'entrée parfaite dans l'univers NJORD.",
-    d_horizon:"De la place pour 5 dans un format carré avec 27 jets. Épuré, serein, nordique.",
+    d_horizon_compact:"Conçu intimement pour 2 avec 22 jets, le Horizon compact est la porte d'entrée parfaite dans l'univers NJORD.",
+    d_horizon:"De la place pour 5 dans un format carré avec 31 jets. Épuré, serein, nordique.",
     d_vista:"Un spa allongé avec vue. Confortable pour 4, installation facile, Plug & Play.",
-    d_urban:"Conçu pour les espaces urbains. Compact mais efficace — 27 jets pour 4 personnes.",
+    d_urban:"Conçu pour les espaces urbains. Compact mais efficace — 27 jets pour 3 personnes.",
     d_odin:"Un swim spa complet pour 6 avec contre-courant puissant. Entraînez-vous, détendez-vous, récupérez.",
     d_valhalla:"Notre plus grand modèle — 8 personnes, 69 jets, nage à contre-courant. Valhalla à l'état pur.",
   }
 };
 
 const WP = [
-  { id:'home',             name:'NJORD Home',             img:'images/home.png',             pp:true,  p:4, j:19, vol:'990 l',   sz:'2150 × 1660 × 780 mm', wt:'280 kg', heat:'2 kW', v:'220–240 V / 50 Hz' },
-  { id:'family',           name:'NJORD Family',           img:'images/family.png',           pp:true,  p:4, j:38, vol:'770 l',   sz:'1920 × 1920 × 790 mm', wt:'260 kg', heat:'2 kW', v:'220–240 V / 50 Hz' },
-  { id:'lounge',           name:'NJORD Lounge',           img:'images/lounge.png',           pp:false, p:5, j:72, vol:'1440 l',  sz:'2300 × 2300 × 970 mm', wt:'447 kg', heat:'3 kW', v:'380–400 V / 50 Hz' },
-  { id:'horizon_compact',  name:'NJORD Horizon compact',  img:'images/horizon-compact.png',  pp:true,  p:2, j:18, vol:'790 l',   sz:'2150 × 1660 × 780 mm', wt:'210 kg', heat:'2 kW', v:'220–240 V / 50 Hz' },
-  { id:'horizon',          name:'NJORD Horizon',          img:'images/horizon.png',          pp:true,  p:5, j:27, vol:'1200 l',  sz:'2160 × 2160 × 850 mm', wt:'270 kg', heat:'2 kW', v:'220–240 V / 50 Hz' },
-  { id:'vista',            name:'NJORD Vista',            img:'images/vista.png',            pp:true,  p:4, j:23, vol:'900 l',   sz:'2150 × 1950 × 780 mm', wt:'260 kg', heat:'2 kW', v:'220–240 V / 50 Hz' },
-  { id:'urban',            name:'NJORD Urban',            img:'images/urban.png',            pp:true,  p:4, j:27, vol:'750 l',   sz:'2000 × 1550 × 780 mm', wt:'165 kg', heat:'2 kW', v:'220–240 V / 50 Hz' },
+  { id:'home',            name:'NJORD Home',            img:'images/home.png',            pp:true,  p:4, j:19, vol:'990 l',  sz:'2150 × 1660 × 780 mm', wt:'280 kg', heat:'2 kW',  v:'220–240 V / 50 Hz', pump:'1× Dual 2.2 kW',         ctrl:'Joyonway PB565 Wi-Fi', water:'UV lamp',   filter:'Telescopic skimmer + cartridge', shell:'Sterling silver acrylic / Marble', panels:'Wall sandwich insulation, grey',     ins:'Alu Nordic' },
+  { id:'family',          name:'NJORD Family',          img:'images/family.png',          pp:true,  p:4, j:38, vol:'770 l',  sz:'1920 × 1920 × 790 mm', wt:'260 kg', heat:'2 kW',  v:'220–240 V / 50 Hz', pump:'1× Dual 2.2 kW',         ctrl:'Joyonway PB565 Wi-Fi', water:'UV lamp',   filter:'Telescopic skimmer + cartridge', shell:'Sterling silver acrylic / Marble', panels:'Wall sandwich insulation, grey',     ins:'Alu Nordic' },
+  { id:'lounge',          name:'NJORD Lounge',          img:'images/lounge.png',          pp:false, p:5, j:72, vol:'1440 l', sz:'2300 × 2300 × 970 mm', wt:'447 kg', heat:'3 kW',  v:'380–400 V / 50 Hz', pump:'2× 2.2 kW + circ. + blower', ctrl:'Joyonway PB565 Wi-Fi', water:'UV lamp',   filter:'Telescopic skimmer + cartridge', shell:'Sterling silver acrylic / Marble', panels:'Wall sandwich insulation, grey',     ins:'Alu Nordic' },
+  { id:'horizon_compact', name:'NJORD Horizon compact', img:'images/horizon-compact.png', pp:true,  p:2, j:22, vol:'790 l',  sz:'2150 × 1660 × 780 mm', wt:'250 kg', heat:'2 kW',  v:'220–240 V / 50 Hz', pump:'1× Dual 1.86 kW',        ctrl:'Joyonway PB565 Wi-Fi', water:'UV system', filter:'CMP + TM cartridge',             shell:'Sterling silver acrylic / Marble', panels:'Wall sandwich insulation, grey',     ins:'Alu Nordic' },
+  { id:'horizon',         name:'NJORD Horizon',         img:'images/horizon.png',         pp:true,  p:5, j:31, vol:'1200 l', sz:'2160 × 2160 × 850 mm', wt:'260 kg', heat:'2 kW',  v:'220–240 V / 50 Hz', pump:'1× Dual 1.86 kW',        ctrl:'Joyonway PB565 Wi-Fi', water:'UV system', filter:'CMP + TM cartridge',             shell:'Sterling silver acrylic / Marble', panels:'Wall sandwich insulation, grey',     ins:'Alu Nordic' },
+  { id:'vista',           name:'NJORD Vista',           img:'images/vista.png',           pp:true,  p:4, j:23, vol:'900 l',  sz:'2150 × 1950 × 850 mm', wt:'260 kg', heat:'2 kW',  v:'220–240 V / 50 Hz', pump:'1× Dual 1.86 kW',        ctrl:'Joyonway PB565 Wi-Fi', water:'UV system', filter:'CMP + TM cartridge',             shell:'Sterling silver acrylic / Marble', panels:'Wall sandwich insulation, grey',     ins:'Alu Nordic' },
+  { id:'urban',           name:'NJORD Urban',           img:'images/urban.png',           pp:true,  p:3, j:27, vol:'750 l',  sz:'2000 × 1550 × 780 mm', wt:'165 kg', heat:'2 kW',  v:'220–240 V / 50 Hz', pump:'1× Dual 2.2 kW',         ctrl:'Joyonway PB565 Wi-Fi', water:'UV lamp',   filter:'Telescopic skimmer + cartridge', shell:'Sterling silver acrylic / Marble', panels:'Wall sandwich insulation, grey',     ins:'Alu Nordic' },
 ];
 const SS = [
-  { id:'odin',     name:'NJORD POOL Odin',     img:'images/pool-odin.png',     pp:false, p:6, j:63, vol:'6000 l', sz:'4500 × 2280 × 1131 mm', wt:'1236 kg', heat:'3 kW',     v:'380–400 V / 50 Hz' },
-  { id:'valhalla', name:'NJORD POOL Valhalla', img:'images/pool-valhalla.png', pp:false, p:8, j:69, vol:'7000 l', sz:'5800 × 2300 × 1300 mm', wt:'1429 kg', heat:'2 × 3 kW', v:'380–400 V / 50 Hz' },
+  { id:'odin',     name:'NJORD POOL Odin',     img:'images/pool-odin.png',     pp:false, p:6, j:63, vol:'6000 l', sz:'4500 × 2280 × 1310 mm', wt:'1236 kg', heat:'3 kW',     v:'380–400 V / 50 Hz', pump:'Massage 1×2.2 kW, circ. 1×0.25 kW, counter 3×2.2 kW',              ctrl:'Balboa BP2100 / SPATOUCH 2', water:'UV lamp', filter:'2× 50 sf', shell:'Sterling silver / pearl shadow acrylic', panels:'Wall sandwich insulation, grey oak', ins:'Alu Nordic' },
+  { id:'valhalla', name:'NJORD POOL Valhalla', img:'images/pool-valhalla.png', pp:false, p:8, j:69, vol:'7000 l', sz:'5800 × 2300 × 1300 mm', wt:'1429 kg', heat:'2 × 3 kW', v:'380–400 V / 50 Hz', pump:'Massage 2×2.2 kW, circ. 2×0.25 kW, counter 3×2.2 kW, blower 1×0.7 kW', ctrl:'Balboa BP2100 / SPATOUCH 2', water:'UV lamp', filter:'4× 50 sf', shell:'Sterling silver / pearl shadow acrylic', panels:'Wall sandwich insulation, grey oak', ins:'Alu Nordic' },
 ];
 
 function card(prod, lang, type) {
   const t = T[lang];
   const ss = type === 'ss';
-  return `<div class="card">
-    <div class="card-img"><img src="${prod.img}" alt="${prod.name}" loading="lazy"></div>
+  const idx = (ss ? SS : WP).indexOf(prod);
+  return `<div class="card" style="cursor:default">
+    <div class="card-img" style="cursor:pointer" onclick="openModal('${type}',${idx})">
+      <img src="${prod.img}" alt="${prod.name}" loading="lazy">
+    </div>
     <div class="card-body">
       <div class="card-tags">
         <span class="tag ${ss ? 'tag-ss' : 'tag-wp'}">${ss ? t.lbl_ss : t.lbl_wp}</span>
@@ -525,13 +606,69 @@ function card(prod, lang, type) {
         <div class="sp"><span class="sp-lbl">${t.lbl_people}</span><span class="sp-val">${prod.p}</span></div>
         <div class="sp"><span class="sp-lbl">${t.lbl_jets}</span><span class="sp-val">${prod.j}</span></div>
         <div class="sp"><span class="sp-lbl">${t.lbl_vol}</span><span class="sp-val">${prod.vol}</span></div>
-        <div class="sp"><span class="sp-lbl">${t.lbl_heat}</span><span class="sp-val">${prod.heat}</span></div>
         <div class="sp sp-full"><span class="sp-lbl">${t.lbl_size}</span><span class="sp-val">${prod.sz}</span></div>
-        <div class="sp"><span class="sp-lbl">${t.lbl_wt}</span><span class="sp-val">${prod.wt}</span></div>
-        <div class="sp"><span class="sp-lbl">${t.lbl_v}</span><span class="sp-val">${prod.v}</span></div>
+      </div>
+      <div style="margin-top:18px">
+        <button class="btn btn-p" onclick="openModal('${type}',${idx})" style="font-size:.72rem;padding:11px 24px;width:100%">${t.lbl_detail} →</button>
       </div>
     </div>
   </div>`;
+}
+
+function sp(lbl, val, full) {
+  return `<div class="modal-sp${full?' full':''}"><span class="modal-sp-lbl">${lbl}</span><span class="modal-sp-val">${val}</span></div>`;
+}
+
+function openModal(type, idx) {
+  const t = T[lang];
+  const prod = type === 'ss' ? SS[idx] : WP[idx];
+  const ss = type === 'ss';
+
+  document.getElementById('modal-img').src = prod.img;
+  document.getElementById('modal-img').alt = prod.name;
+  document.getElementById('modal-name').textContent = prod.name;
+  document.getElementById('modal-desc').textContent = t['d_'+prod.id] || '';
+  document.getElementById('modal-inq-btn').textContent = t.inq_send;
+
+  document.getElementById('modal-tags').innerHTML =
+    `<span class="tag ${ss?'tag-ss':'tag-wp'}">${ss?t.lbl_ss:t.lbl_wp}</span>` +
+    (prod.pp ? `<span class="tag tag-pp">${t.lbl_pp}</span>` : '');
+
+  document.getElementById('modal-sec1-title').textContent = t.lbl_sec_basic;
+  document.getElementById('modal-specs-basic').innerHTML =
+    sp(t.lbl_people, prod.p) +
+    sp(t.lbl_jets,   prod.j) +
+    sp(t.lbl_vol,    prod.vol) +
+    sp(t.lbl_wt,     prod.wt) +
+    sp(t.lbl_size,   prod.sz, true) +
+    sp(t.lbl_v,      prod.v,  true);
+
+  document.getElementById('modal-sec2-title').textContent = t.lbl_sec_tech;
+  document.getElementById('modal-specs-tech').innerHTML =
+    sp(t.lbl_heat,   prod.heat) +
+    sp(t.lbl_water,  prod.water) +
+    sp(t.lbl_pump,   prod.pump, true) +
+    sp(t.lbl_ctrl,   prod.ctrl, true) +
+    sp(t.lbl_filter, prod.filter, true);
+
+  document.getElementById('modal-sec3-title').textContent = t.lbl_sec_build;
+  document.getElementById('modal-specs-build').innerHTML =
+    sp(t.lbl_shell,  prod.shell,  true) +
+    sp(t.lbl_panels, prod.panels, true) +
+    sp(t.lbl_ins,    prod.ins,    true);
+
+  const overlay = document.getElementById('modal-overlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
 }
 
 let lang = localStorage.getItem('njord-lang') || 'en';
@@ -590,6 +727,7 @@ function toggleNav() {
 }
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#nav-links a').forEach(a => a.addEventListener('click', () => document.getElementById('nav-links').classList.remove('open')));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
   setLang(lang);
 });
 </script>
