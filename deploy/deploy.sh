@@ -12,6 +12,7 @@ echo "=== Deploy files ==="
 mkdir -p "$WEB_DIR"
 cp -r "$SRC_DIR/images" "$WEB_DIR/"
 cp "$SRC_DIR/index.html" "$WEB_DIR/"
+cp -r "$SRC_DIR/download" "$WEB_DIR/"
 chown -R www-data:www-data "$WEB_DIR"
 
 echo "=== Caddy config ==="
